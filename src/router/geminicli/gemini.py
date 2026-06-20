@@ -38,6 +38,7 @@ from src.converter.fake_stream import (
 
 # 本地模块 - 基础路由工具
 from src.router.hi_check import is_health_check_request, create_health_check_response
+from src.router.request_sanitizer import GeminiSanitizeRoute
 from src.router.stream_passthrough import (
     build_streaming_response_or_error,
     prepend_async_item,
@@ -53,7 +54,8 @@ from src.task_manager import create_managed_task
 
 # ==================== 路由器初始化 ====================
 
-router = APIRouter()
+# route_class 挂载入站请求体清洗（双重序列化解包 / 补齐缺失的 role）
+router = APIRouter(route_class=GeminiSanitizeRoute)
 
 
 # ==================== API 路由 ====================
