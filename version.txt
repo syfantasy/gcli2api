@@ -1,4 +1,4 @@
-full_hash=def2fbf5d704b60fc301fb867b43819f57deeb8a
-short_hash=def2fbf
-message=适应企业版和标准版geminicli
-date=2026-06-19 20:38:24 +0800
+full_hash=dc556f17954fb3635a30f776271b9bf6b9618af6
+short_hash=dc556f1
+message=fix: implement robust request sanitizer for double-stringified payloads and missing roles
+date=2026-06-20 13:03:20 +0800
