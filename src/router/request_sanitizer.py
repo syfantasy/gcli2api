@@ -45,7 +45,7 @@ _DEFAULT_ROLE = "user"
 
 def _clean_content_item(item: dict) -> Tuple[dict, bool]:
     """
-    清洗单个 content 字典对象，为其补齐 role 并处理潜在的 parts 双重序列化。
+    清洗单个 content 字典对象，为其补齐 role 并处理潜在的 parts 双重序列化或非列表类型。
     """
     changed = False
     
@@ -55,7 +55,7 @@ def _clean_content_item(item: dict) -> Tuple[dict, bool]:
         item["role"] = _DEFAULT_ROLE
         changed = True
         
-    # 处理 parts 本身被序列化为字符串的情况
+    # 处理 parts 本身是字符串、字典或列表的情况
     parts = item.get("parts")
     if isinstance(parts, str):
         try:
@@ -64,10 +64,27 @@ def _clean_content_item(item: dict) -> Tuple[dict, bool]:
                 item["parts"] = parsed_parts
                 parts = parsed_parts
                 changed = True
+            elif isinstance(parsed_parts, dict):
+                item["parts"] = [parsed_parts]
+                parts = item["parts"]
+                changed = True
+            else:
+                # parsed_parts 是常规字符串（例如 JSON-escaped string）
+                item["parts"] = [{"text": parts}]
+                parts = item["parts"]
+                changed = True
         except Exception:
-            pass
+            # parts 是纯文本字符串（如 'hello'）
+            item["parts"] = [{"text": parts}]
+            parts = item["parts"]
+            changed = True
+    elif isinstance(parts, dict):
+        # 兼容本应是 list[dict] 但写成 dict 的情况
+        item["parts"] = [parts]
+        parts = item["parts"]
+        changed = True
             
-    # 清洗 parts 列表中的子项
+    # 清洗 parts 列表中的子项（如把里面的字符串子项转换为 Pydantic 可验证的 dict 对象）
     if isinstance(parts, list):
         new_parts = []
         for part in parts:
@@ -77,8 +94,12 @@ def _clean_content_item(item: dict) -> Tuple[dict, bool]:
                     if isinstance(parsed_part, dict):
                         part = parsed_part
                         changed = True
+                    else:
+                        part = {"text": part}
+                        changed = True
                 except Exception:
-                    pass
+                    part = {"text": part}
+                    changed = True
             new_parts.append(part)
         item["parts"] = new_parts
         
