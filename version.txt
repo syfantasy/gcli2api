@@ -1,4 +1,4 @@
-full_hash=dc556f17954fb3635a30f776271b9bf6b9618af6
-short_hash=dc556f1
-message=fix: implement robust request sanitizer for double-stringified payloads and missing roles
-date=2026-06-20 13:03:20 +0800
+full_hash=40d08bf7031666155d466f242a9b9c6d2b867ee9
+short_hash=40d08bf
+message=fix: support string and dictionary formats for content parts
+date=2026-06-20 13:32:22 +0800
